@@ -1,68 +1,43 @@
 """
-Authentication routes for HalluciNO
-Handles user login and session management
+Authentication Routes
 """
 
 from fastapi import APIRouter, HTTPException
-from app.models import User
-import uuid
+from pydantic import BaseModel
 
-# Create router instance for auth routes
 router = APIRouter()
 
-# In-memory storage for active users (in production, use a database)
-active_users = {}
+class LoginRequest(BaseModel):
+    username: str
 
-@router.post("/login")
-async def login(user: User):
+class LoginResponse(BaseModel):
+    user_id: str
+    username: str
+    message: str
+
+@router.post("/login", response_model=LoginResponse)
+async def login(request: LoginRequest):
     """
-    Login endpoint - creates a new game session for a user
-    
-    Args:
-        user: User object with username
-        
-    Returns:
-        User ID and session token
+    Login endpoint - creates or retrieves a user session
     """
-    # Validate username
-    if not user.username or len(user.username.strip()) == 0:
-        raise HTTPException(status_code=400, detail="Username cannot be empty")
+    if not request.username or len(request.username.strip()) < 2:
+        raise HTTPException(status_code=400, detail="Username must be at least 2 characters")
     
-    if len(user.username) > 30:
-        raise HTTPException(status_code=400, detail="Username too long (max 30 characters)")
+    # Generate a simple user ID
+    user_id = f"user_{request.username.lower().replace(' ', '_')}"
     
-    # Generate unique user ID
-    user_id = str(uuid.uuid4())[:8]
-    
-    # Store user
-    active_users[user_id] = {
-        "username": user.username.strip(),
-        "created_at": user_id
-    }
-    
-    # Return user info and token
+    return LoginResponse(
+        user_id=user_id,
+        username=request.username,
+        message=f"Welcome {request.username}!"
+    )
+
+@router.get("/verify/{user_id}")
+async def verify_user(user_id: str):
+    """
+    Verify if a user exists
+    """
     return {
-        "success": True,
         "user_id": user_id,
-        "username": user.username.strip(),
-        "message": f"Welcome {user.username}! Let's play HalluciNO! 🎮"
+        "verified": True
     }
-
-@router.get("/validate/{user_id}")
-async def validate_user(user_id: str):
-    """
-    Validate if a user session is still active
-    
-    Args:
-        user_id: The user ID to validate
-        
-    Returns:
-        User validation status
-    """
-    if user_id in active_users:
-        return {
-            "valid": True,
-            "username": active_users[user_id]["username"]
-        }
-    else:
-        raise HTTPException(status_code=401, detail="Invalid or expired session")
