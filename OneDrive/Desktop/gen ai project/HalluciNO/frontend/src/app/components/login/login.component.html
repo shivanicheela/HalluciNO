@@ -1,0 +1,66 @@
+<!-- Login page UI -->
+<div class="login-container">
+  <!-- Animated background -->
+  <div class="bg-animation">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Login card -->
+  <div class="login-card card">
+    <!-- Header -->
+    <div class="header text-center mb-3">
+      <h1 class="title">🤖 HalluciNO</h1>
+      <p class="subtitle">AI Hallucination Detector Game</p>
+    </div>
+
+    <!-- Description -->
+    <div class="description text-center mb-3">
+      <p>Challenge your AI knowledge! Identify whether AI statements are truth or hallucinations. 🎮</p>
+    </div>
+
+    <!-- Login form -->
+    <form (ngSubmit)="handleLogin()" class="form">
+      <!-- Username input -->
+      <div class="form-group">
+        <label for="username">Your Username</label>
+        <input
+          type="text"
+          id="username"
+          [(ngModel)]="username"
+          name="username"
+          placeholder="Enter your username"
+          (keypress)="handleKeyPress($event)"
+          maxlength="30"
+          [disabled]="isLoading"
+        />
+      </div>
+
+      <!-- Error message -->
+      <div *ngIf="errorMessage" class="error-message">
+        ⚠️ {{ errorMessage }}
+      </div>
+
+      <!-- Login button -->
+      <button
+        type="submit"
+        class="btn btn-primary btn-lg w-full"
+        [disabled]="isLoading"
+      >
+        <span *ngIf="!isLoading">Let's Play! 🚀</span>
+        <span *ngIf="isLoading">
+          <div class="loader"></div>
+          Starting...
+        </span>
+      </button>
+    </form>
+
+    <!-- Footer info -->
+    <div class="footer-info text-center mt-3">
+      <p class="text-muted">
+        Test your knowledge of Generative AI, LLMs, and more!
+      </p>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+# HalluciNO Backend Dependencies
+# Simplified for Python 3.13 compatibility
+
+fastapi
+uvicorn
+pydantic
+python-multipart
+pydantic-settings
+sqlalchemy
+google-generativeai
+python-dotenv
+

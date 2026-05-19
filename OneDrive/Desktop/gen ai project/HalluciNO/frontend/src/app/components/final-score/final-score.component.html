@@ -1,0 +1,194 @@
+<!-- Final Score Page UI -->
+<div class="final-score-container">
+  <!-- Background -->
+  <div class="score-bg"></div>
+
+  <!-- Header -->
+  <header class="score-header">
+    <div class="header-content">
+      <h1 class="logo">🤖 HalluciNO</h1>
+      <span class="username-text">{{ username }}</span>
+    </div>
+  </header>
+
+  <div class="score-content">
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="loader"></div>
+      <p>Calculating your score...</p>
+    </div>
+
+    <!-- Score display -->
+    <div *ngIf="!isLoading && finalScore" class="score-display">
+      <!-- Confetti effect -->
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+      <div class="confetti"></div>
+
+      <!-- Badge -->
+      <div class="badge-section">
+        <div class="badge-icon">{{ finalScore.badge }}</div>
+      </div>
+
+      <!-- Achievements (NEW!) -->
+      <div class="achievements-section" *ngIf="achievements.length > 0">
+        <h3 class="achievements-title">🏆 Badges Earned!</h3>
+        <p class="achievement-message">{{ finalScore.achievement_message }}</p>
+        <div class="achievements-grid">
+          <div class="achievement-badge" *ngFor="let achievement of achievements">
+            <div class="achievement-icon">{{ achievement.icon }}</div>
+            <div class="achievement-name">{{ achievement.name }}</div>
+            <div class="achievement-description">{{ achievement.description }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main score -->
+      <div class="main-score">
+        <h1 class="score-title">Game Complete!</h1>
+        <div class="score-number">{{ finalScore.final_score }}</div>
+        <p class="score-label">Points Earned</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ finalScore.correct_answers }}/{{ finalScore.total_questions }}</div>
+            <div class="stat-label">Correct Answers</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ finalScore.accuracy_percentage }}%</div>
+            <div class="stat-label">Accuracy</div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-info">
+            <div class="stat-value">{{ finalScore.max_streak }}</div>
+            <div class="stat-label">Max Streak</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accuracy message -->
+      <div class="accuracy-message">
+        <p class="message-text">{{ getAccuracyMessage() }}</p>
+      </div>
+
+      <!-- Category breakdown -->
+      <div class="category-breakdown">
+        <h3>Performance by Category</h3>
+        <div class="category-list">
+          <div class="category-item" *ngFor="let cat of finalScore.category_breakdown | keyvalue">
+            <span class="category-name">{{ cat.key }}</span>
+            <span class="category-score">{{ cat.value }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question Review -->
+      <div class="question-review" *ngIf="finalScore.question_review && finalScore.question_review.length > 0">
+        <h3>📚 Review Your Answers</h3>
+        <div class="review-list">
+          <div class="review-item" *ngFor="let review of finalScore.question_review; let i = index" 
+               [class.correct]="review.is_correct" [class.incorrect]="!review.is_correct">
+            <div class="review-header">
+              <div class="review-number">Question {{ i + 1 }}</div>
+              <div class="review-status">
+                <span *ngIf="review.is_correct" class="badge-correct">✅ Correct</span>
+                <span *ngIf="!review.is_correct" class="badge-incorrect">❌ Wrong</span>
+              </div>
+            </div>
+            
+            <div class="review-category">{{ review.category }}</div>
+            
+            <div class="review-question">{{ review.question }}</div>
+            
+            <div class="review-answer">
+              <div class="answer-row">
+                <span class="answer-label">Your answer:</span>
+                <span class="answer-value" [class.wrong]="!review.is_correct">{{ review.user_answer }}</span>
+              </div>
+              <div class="answer-row" *ngIf="!review.is_correct">
+                <span class="answer-label">Correct answer:</span>
+                <span class="answer-value correct">{{ review.correct_answer }}</span>
+              </div>
+            </div>
+            
+            <div class="review-explanation">
+              <p class="explanation-label">💡 Explanation:</p>
+              <p class="explanation-text">{{ review.explanation }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="action-buttons">
+        <button class="btn btn-primary btn-lg" (click)="playAgain()">
+          🎮 Play Again
+        </button>
+        
+        <button class="btn btn-secondary btn-lg" (click)="viewLeaderboard()">
+          👑 View Leaderboard
+        </button>
+        
+        <button class="btn btn-secondary btn-lg" (click)="goHome()">
+          🏠 Home
+        </button>
+      </div>
+
+      <!-- Share buttons -->
+      <div class="share-section">
+        <h4>📱 Share Your Victory</h4>
+        <div class="share-buttons">
+          <button class="btn btn-sm btn-secondary" (click)="shareOnTwitter()">
+            𝕏 Tweet
+          </button>
+          
+          <button class="btn btn-sm btn-secondary" (click)="shareOnLinkedIn()">
+            💼 LinkedIn
+          </button>
+          
+          <button class="btn btn-sm btn-secondary" (click)="copyShareText()">
+            📋 Copy
+          </button>
+
+          <button class="btn btn-sm btn-secondary" (click)="toggleShareModal()">
+            👀 Preview
+          </button>
+        </div>
+      </div>
+
+      <!-- Share Modal (Preview) -->
+      <div class="share-modal" *ngIf="showShareModal" (click)="toggleShareModal()">
+        <div class="share-modal-content" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3>Your Score Card</h3>
+            <button class="close-btn" (click)="toggleShareModal()">✕</button>
+          </div>
+          <div class="share-card">
+            <div class="share-card-content">
+              <pre class="share-text">{{ getShareText() }}</pre>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-primary btn-sm" (click)="copyShareText(); toggleShareModal()">
+              📋 Copy & Close
+            </button>
+            <button class="btn btn-secondary btn-sm" (click)="shareOnTwitter(); toggleShareModal()">
+              𝕏 Tweet
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

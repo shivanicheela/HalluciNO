@@ -1,0 +1,9 @@
+<!-- Main app layout with routing outlet -->
+<div class="app-container">
+  <button class="theme-toggle" (click)="toggleTheme()" [title]="(isDarkMode$ | async) ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+    {{ (isDarkMode$ | async) ? '☀️' : '🌙' }}
+  </button>
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,0 +1,157 @@
+<!-- Game/Quiz UI -->
+<div class="game-container" *ngIf="gameState">
+  <!-- Header -->
+  <header class="game-header">
+    <div class="header-content">
+      <div class="left">
+        <h2 class="logo">🤖 HalluciNO</h2>
+        <span class="username-badge">{{ username }}</span>
+      </div>
+      
+      <div class="center">
+        <div class="score-display">
+          <span class="score-label">Score:</span>
+          <span class="score-value">{{ gameState.score }}</span>
+        </div>
+        <div class="streak-display" *ngIf="gameState.streak > 0">
+          <span class="streak-fire">🔥</span>
+          <span class="streak-value">{{ gameState.streak }}</span>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="timer" [class]="'timer-' + getTimerColor()">
+          <span class="timer-icon">⏱️</span>
+          <span class="timer-value">{{ timeRemaining }}s</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-container">
+      <div class="progress-bar" [style.width.%]="getProgress()"></div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="game-content">
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="loader"></div>
+      <p>Loading next question...</p>
+    </div>
+
+    <!-- Question display -->
+    <div *ngIf="!isLoading && currentQuestion" class="question-section">
+      <!-- Question info -->
+      <div class="question-info">
+        <div class="question-number">
+          Question {{ gameState.currentQuestion }} of {{ gameState.totalQuestions }}
+        </div>
+        <div class="category-badge" [class]="getCategoryBadgeClass(currentQuestion.category)">
+          {{ currentQuestion.category }}
+        </div>
+      </div>
+
+      <!-- Question text -->
+      <div class="question-card card">
+        <h3 class="question-text">
+          {{ currentQuestion.question }}
+        </h3>
+      </div>
+
+      <!-- Hints System -->
+      <div class="hints-section" *ngIf="!showAnswer">
+        <button 
+          class="hint-btn" 
+          (click)="getHint()"
+          [disabled]="!hasMoreHints()"
+          *ngIf="currentQuestion.hints && currentQuestion.hints.length > 0"
+        >
+          💡 Hint ({{ hintsUsed }}/{{ maxHints }})
+        </button>
+        
+        <div class="hint-display" *ngIf="currentHint">
+          <strong>Hint:</strong> {{ currentHint }}
+          <span class="hint-penalty"> (-5 points)</span>
+        </div>
+      </div>
+
+      <!-- Answer buttons -->
+      <div class="answer-buttons" *ngIf="!showAnswer">
+        <button
+          class="btn btn-lg answer-btn truth-btn"
+          (click)="submitAnswer(false)"
+          [disabled]="isLoading"
+        >
+          <span class="btn-icon">✅</span>
+          <span class="btn-text">Truth</span>
+          <span class="btn-subtitle">This statement is TRUE</span>
+        </button>
+
+        <button
+          class="btn btn-lg answer-btn hallucination-btn"
+          (click)="submitAnswer(true)"
+          [disabled]="isLoading"
+        >
+          <span class="btn-icon">🚫</span>
+          <span class="btn-text">Hallucination</span>
+          <span class="btn-subtitle">This is a FALSE statement</span>
+        </button>
+      </div>
+
+      <!-- Answer feedback -->
+      <div *ngIf="showAnswer" class="answer-feedback" [class]="answeredCorrectly ? 'correct' : 'incorrect'">
+        <!-- Instant Feedback -->
+        <div class="feedback-instant" [class.incorrect]="!answeredCorrectly">
+          <strong>{{ answeredCorrectly ? '✅ Correct!' : '❌ Incorrect' }}</strong>
+          <p>{{ answeredCorrectly ? 'Great job!' : 'Not quite right, but don\'t worry!' }}</p>
+        </div>
+
+        <div class="feedback-header">
+          <span class="feedback-icon">{{ answeredCorrectly ? '🎉' : '😭' }}</span>
+          <h4 class="feedback-text">{{ feedback }}</h4>
+        </div>
+
+        <div class="explanation">
+          <h5>💡 Explanation:</h5>
+          <p>{{ explanation }}</p>
+          <div class="learn-more-section">
+            <button class="learn-more-btn" (click)="openLearnMore()">
+              <span class="learn-icon">📚</span>
+              Learn More
+            </button>
+          </div>
+        </div>
+
+        <!-- Score change animation -->
+        <div class="score-change-container" [class]="scoreAnimationClass">
+          <span class="score-change-badge" [class]="points_change > 0 ? 'positive' : 'negative'">
+            {{ points_change > 0 ? '+' : '' }}{{ points_change }}
+          </span>
+        </div>
+
+        <!-- Hallucination Probability Meter -->
+        <div class="probability-meter" *ngIf="showProbabilityMeter">
+          <div class="probability-label">
+            <span class="label-text">Hallucination Probability</span>
+            <span class="probability-value">{{ hallucination_probability }}%</span>
+          </div>
+          <div class="probability-bar-container">
+            <div class="probability-bar" [style.width.%]="hallucination_probability"></div>
+          </div>
+        </div>
+
+        <!-- Streak milestone message -->
+        <div class="streak-milestone" *ngIf="streak_message">
+          <span class="milestone-text">{{ streak_message }}</span>
+        </div>
+
+        <div class="loading-next">
+          <div class="loader-small"></div>
+          <p>Moving to next question...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

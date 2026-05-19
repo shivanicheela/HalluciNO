@@ -1,0 +1,88 @@
+<!-- Leaderboard Page UI -->
+<div class="leaderboard-container">
+  <!-- Header -->
+  <header class="leaderboard-header">
+    <div class="header-content container">
+      <div class="header-left">
+        <h1 class="title">👑 Global Leaderboard</h1>
+        <p class="subtitle">Top AI Hallucination Detectors</p>
+      </div>
+      <button class="btn btn-secondary" (click)="goHome()">← Back</button>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="leaderboard-content container">
+    <!-- Loading state -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="loader"></div>
+      <p>Loading leaderboard...</p>
+    </div>
+
+    <!-- Leaderboard table -->
+    <div *ngIf="!isLoading" class="leaderboard-section">
+      <!-- Stats -->
+      <div class="stats-bar">
+        <span class="stat">Total Players: <strong>{{ totalPlayers }}</strong></span>
+        <span class="stat">Top Score: <strong *ngIf="leaderboard[0]">{{ leaderboard[0].score }}</strong></span>
+      </div>
+
+      <!-- Leaderboard table -->
+      <div class="leaderboard-table">
+        <!-- Headers -->
+        <div class="table-header">
+          <div class="col rank">Rank</div>
+          <div class="col player">Player</div>
+          <div class="col score">Score</div>
+          <div class="col accuracy">Accuracy</div>
+          <div class="col streak">Streak</div>
+          <div class="col badge">Badge</div>
+        </div>
+
+        <!-- Rows -->
+        <div class="table-body">
+          <div
+            *ngFor="let entry of leaderboard; let i = index"
+            class="table-row"
+            [class]="'rank-' + i"
+          >
+            <div class="col rank" [class]="getRankClass(entry.rank)">
+              <span class="medal">{{ getMedalIcon(entry.rank) }}</span>
+              <span *ngIf="entry.rank > 3" class="rank-number">{{ entry.rank }}</span>
+            </div>
+
+            <div class="col player">
+              <span class="player-name">{{ entry.username }}</span>
+            </div>
+
+            <div class="col score">
+              <span class="score-badge">{{ entry.score }}</span>
+            </div>
+
+            <div class="col accuracy">
+              <div class="accuracy-bar">
+                <div class="accuracy-fill" [style.width.%]="entry.accuracy"></div>
+              </div>
+              <span class="accuracy-text">{{ entry.accuracy | number: '1.0-0' }}%</span>
+            </div>
+
+            <div class="col streak">
+              <span class="streak-icon" *ngIf="entry.max_streak > 0">🔥</span>
+              <span class="streak-number">{{ entry.max_streak }}</span>
+            </div>
+
+            <div class="col badge">
+              <span class="badge-text">{{ entry.badge }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="leaderboard.length === 0" class="empty-state">
+        <p>No scores yet. Be the first to play! 🎮</p>
+        <button class="btn btn-primary" (click)="goHome()">Start Playing</button>
+      </div>
+    </div>
+  </main>
+</div>

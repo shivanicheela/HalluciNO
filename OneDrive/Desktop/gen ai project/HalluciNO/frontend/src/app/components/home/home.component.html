@@ -1,0 +1,179 @@
+<!-- Home page UI -->
+<div class="home-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <h1 class="logo">🤖 HalluciNO</h1>
+      <div class="header-right">
+        <span class="welcome-text">Welcome, <strong>{{ username }}</strong>! 👋</span>
+        <button class="btn btn-sm btn-secondary" (click)="logout()">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main class="main-content container">
+    <!-- Hero section -->
+    <section class="hero text-center mb-3">
+      <h2>Choose Your Challenge</h2>
+      <p class="text-muted">Test your AI knowledge and spot hallucinations!</p>
+    </section>
+
+    <!-- Rules section (collapsible) -->
+    <section class="rules-section" [class.expanded]="showRules">
+      <button class="rules-toggle" (click)="toggleRules()">
+        <span class="rules-icon">📋</span>
+        <span class="rules-text">{{ showRules ? '▼ Hide Rules' : '▶ View Rules' }}</span>
+      </button>
+      
+      <div class="rules-content" *ngIf="showRules">
+        <div class="rules-grid">
+          <div class="rule-item">
+            <strong>✅ Correct Answer</strong>
+            <span class="rule-value">+10 pts</span>
+          </div>
+          <div class="rule-item">
+            <strong>❌ Wrong Answer</strong>
+            <span class="rule-value">-3 pts</span>
+          </div>
+          <div class="rule-item">
+            <strong>💡 Using Hint</strong>
+            <span class="rule-value">-5 pts</span>
+          </div>
+          <div class="rule-item">
+            <strong>🎯 2-Streak Bonus</strong>
+            <span class="rule-value">+2 pts</span>
+          </div>
+        </div>
+        <p class="rules-note">🏆 Build streaks at 2, 3, 5, 7, 10... consecutive correct answers to unlock bonuses and top the leaderboard!</p>
+      </div>
+    </section>
+
+    <!-- Difficulty selection -->
+    <section class="difficulty-section">
+      <h3 class="section-title">Select Difficulty Level</h3>
+      
+      <div class="difficulty-grid">
+        <div 
+          *ngFor="let diff of difficulties"
+          class="difficulty-card card"
+          [class.active]="selectedDifficulty === diff.value"
+          (click)="selectedDifficulty = diff.value"
+        >
+          <div class="difficulty-label">{{ diff.label }}</div>
+          <p class="difficulty-description">{{ diff.description }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category selection -->
+    <section class="category-section" *ngIf="categories.length > 0">
+      <h3 class="section-title">Filter by Category (Optional)</h3>
+      
+      <div class="category-filter">
+        <button 
+          class="category-btn"
+          [class.active]="selectedCategory === 'all'"
+          (click)="selectedCategory = 'all'"
+        >
+          🌐 All Categories
+        </button>
+        
+        <button 
+          *ngFor="let category of categories"
+          class="category-btn"
+          [class.active]="selectedCategory === category"
+          (click)="selectedCategory = category"
+        >
+          📚 {{ category }}
+        </button>
+      </div>
+    </section>
+
+    <!-- Question count selection -->
+    <section class="question-count-section">
+      <h3 class="section-title">Number of Questions</h3>
+      
+      <div class="question-count-buttons">
+        <button 
+          *ngFor="let count of questionCounts"
+          class="btn"
+          [class.btn-primary]="selectedQuestionCount === count"
+          [class.btn-secondary]="selectedQuestionCount !== count"
+          (click)="selectedQuestionCount = count"
+        >
+          {{ count }} Questions
+        </button>
+      </div>
+    </section>
+
+    <!-- Categories info -->
+    <section class="categories-section" *ngIf="categories.length > 0">
+      <h3 class="section-title">Topics Covered</h3>
+      
+      <div class="categories-grid">
+        <span class="badge badge-primary" *ngFor="let category of categories">
+          {{ category }}
+        </span>
+      </div>
+    </section>
+
+    <!-- Action buttons -->
+    <section class="action-buttons">
+      <button 
+        class="btn btn-primary btn-lg"
+        (click)="startGame()"
+        [disabled]="isLoading"
+      >
+        <span *ngIf="!isLoading">Let's Play! 🚀</span>
+        <span *ngIf="isLoading">
+          <div class="loader"></div>
+          Starting...
+        </span>
+      </button>
+      
+      <button 
+        class="btn btn-secondary btn-lg"
+        (click)="viewLeaderboard()"
+      >
+        👑 View Leaderboard
+      </button>
+    </section>
+
+    <!-- QR Code Section -->
+    <section class="qr-code-section">
+      <h3 class="section-title text-center">Share HalluciNO 📱</h3>
+      <div class="qr-container">
+        <div class="qr-box card">
+          <canvas #qrCanvas></canvas>
+          <p class="qr-text">Scan to play HalluciNO!</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features showcase -->
+    <section class="features mt-3">
+      <h3 class="section-title text-center">Game Features</h3>
+      
+      <div class="features-grid grid-3">
+        <div class="feature-card card">
+          <span class="feature-icon">⏱️</span>
+          <h4>Timed Questions</h4>
+          <p class="text-muted">Answer quickly and build your streak!</p>
+        </div>
+        
+        <div class="feature-card card">
+          <span class="feature-icon">🏆</span>
+          <h4>Leaderboard</h4>
+          <p class="text-muted">Compete with other players globally!</p>
+        </div>
+        
+        <div class="feature-card card">
+          <span class="feature-icon">🎖️</span>
+          <h4>Achievements</h4>
+          <p class="text-muted">Earn badges for your accomplishments!</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
